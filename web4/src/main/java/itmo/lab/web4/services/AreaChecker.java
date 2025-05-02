@@ -1,5 +1,7 @@
 package itmo.lab.web4.services;
 
+import itmo.lab.web4.mBeans.MxMontanaBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import itmo.lab.web4.models.Point;
@@ -7,9 +9,11 @@ import itmo.lab.web4.models.Point;
 @Service
 public class AreaChecker {
 
-
+@Autowired
+    MxMontanaBean mbean;
 
     public boolean isInTheSpot(Point point){
+
         return (checkIsCircle(point) || checkIsTriangle(point) || checkIsRectangle(point));
     }
 

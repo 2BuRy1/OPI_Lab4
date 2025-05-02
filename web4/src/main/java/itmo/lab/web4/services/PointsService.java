@@ -1,6 +1,7 @@
 package itmo.lab.web4.services;
 
 
+import itmo.lab.web4.mBeans.MxMontanaBean;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import itmo.lab.web4.repositories.UserRepository;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class PointsService {
@@ -27,31 +29,50 @@ public class PointsService {
 
     private final UserRepository userRepository;
 
+    private final MxMontanaBean mxMontanaBean;
+
 
     @Autowired
-    public PointsService(Validator validator, AreaChecker areaChecker, PointRepository pointRepository, UserRepository userRepository){
+    public PointsService(Validator validator, AreaChecker areaChecker, PointRepository pointRepository, UserRepository userRepository, MxMontanaBean mxMontanaBean){
         this.validator = validator;
         this.areaChecker = areaChecker;
         this.pointRepository = pointRepository;
         this.userRepository = userRepository;
+        this.mxMontanaBean = mxMontanaBean;
     }
 
 
     public Point checkHit(Point point, String username) throws BadRequestException {
 
 
-        if(!validator.validate(point)) throw new BadRequestException();
+        if(!validator.validate(point)) {
 
-        User user = userRepository.findByUsername(username).get();
 
-        point.setUser(user);
+            mxMontanaBean.setIsOutOfBounds(true);
 
-        point.setStatus(areaChecker.isInTheSpot(point));
 
-        pointRepository.save(point);
+            throw new BadRequestException("Data is out of range");
 
-        return point;
+        }
 
+        else {
+
+
+
+
+            User user = userRepository.findByUsername(username).get();
+
+            point.setUser(user);
+
+            point.setStatus(areaChecker.isInTheSpot(point));
+
+            mxMontanaBean.update(point.getStatus());
+
+
+            pointRepository.save(point);
+
+            return point;
+        }
     }
 
 
