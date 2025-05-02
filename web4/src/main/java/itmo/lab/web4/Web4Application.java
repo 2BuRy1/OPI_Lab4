@@ -6,8 +6,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class Web4Application {
 
-    public static void main(String[] args) {
-        SpringApplication.run(Web4Application.class, args);
+    public static void main(String[] args) throws InterruptedException {
+            Thread.sleep(200);
+            SpringApplication.run(Web4Application.class, args);
+
+
     }
 
 }

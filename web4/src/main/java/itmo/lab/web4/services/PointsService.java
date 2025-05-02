@@ -2,7 +2,9 @@ package itmo.lab.web4.services;
 
 
 import itmo.lab.web4.mBeans.MxMontanaBean;
+import jakarta.annotation.PostConstruct;
 import org.apache.coyote.BadRequestException;
+import org.apache.el.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,9 +12,9 @@ import itmo.lab.web4.models.Point;
 import itmo.lab.web4.models.User;
 import itmo.lab.web4.repositories.PointRepository;
 import itmo.lab.web4.repositories.UserRepository;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
@@ -31,6 +33,8 @@ public class PointsService {
 
     private final MxMontanaBean mxMontanaBean;
 
+    private List<byte[]> buffs;
+
 
     @Autowired
     public PointsService(Validator validator, AreaChecker areaChecker, PointRepository pointRepository, UserRepository userRepository, MxMontanaBean mxMontanaBean){
@@ -40,6 +44,43 @@ public class PointsService {
         this.userRepository = userRepository;
         this.mxMontanaBean = mxMontanaBean;
     }
+
+
+    @PostConstruct
+    void init() throws InterruptedException {
+        buffs = new ArrayList<>();
+
+        Thread.sleep(500);
+
+
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+
+        executor.scheduleAtFixedRate(() -> {
+            try {
+                for (int i = 0; i < 2; i++) {
+
+
+                    buffs.add(new byte[1024 * 1024 * 4]);
+                }
+
+
+                System.out.println("Freeing memory...");
+                buffs.clear();
+
+              System.gc();
+
+
+            } catch (OutOfMemoryError e) {
+                System.err.println("OOM caught. Clearing everything.");
+                buffs.subList(0, 10).clear();
+
+            }
+        }, 0, 2, TimeUnit.SECONDS);
+    }
+
+
+
+
 
 
     public Point checkHit(Point point, String username) throws BadRequestException {

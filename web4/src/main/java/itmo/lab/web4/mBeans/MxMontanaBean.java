@@ -45,7 +45,7 @@ public class MxMontanaBean extends NotificationBroadcasterSupport implements MxM
                 new MBeanNotificationInfo(
                         types,
                         Notification.class.getName(),
-                        "Уведомление о выходе за допустимые границы"
+                        "Out of bounds notification"
                 )
         };
     }
@@ -94,7 +94,7 @@ public class MxMontanaBean extends NotificationBroadcasterSupport implements MxM
                     this,
                     sequenceNumber++,
                     System.currentTimeMillis(),
-                    "Oh now, there is a mistake in request!!: "
+                    "Oh now I can see, that there is a mistake!!: "
             );
             sendNotification(notification);
         } catch (Exception e) {

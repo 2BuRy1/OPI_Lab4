@@ -2,6 +2,7 @@ package itmo.lab.web4.controllers;
 
 
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ import itmo.lab.web4.services.JwtUtil;
 import itmo.lab.web4.services.PointsService;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 @Slf4j
@@ -26,6 +29,8 @@ public class PointsController {
     private Logger logger;
 
 
+    ExecutorService executors = Executors.newFixedThreadPool(3);
+
     private final JwtUtil jwtUtil;
 
     private final PointsService pointsService;
@@ -36,6 +41,7 @@ public class PointsController {
         this.jwtUtil = jwtUtil;
     }
 
+    @SneakyThrows
     @GetMapping("/points")
     public ResponseEntity<Map<String, ArrayList<Point>>> rofl(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
 
@@ -54,6 +60,7 @@ public class PointsController {
 
 
 
+        //executors.submit(checkIfNecessary());
 
         return ResponseEntity.ok(pointsService.getAllUserPoints(username));
 
@@ -74,6 +81,9 @@ public class PointsController {
 
 
     }
+
+
+
 
 
 }
